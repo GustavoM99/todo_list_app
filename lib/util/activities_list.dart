@@ -2,17 +2,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ListaAtividades extends StatelessWidget {
-  const ListaAtividades({
+class ActivitiesList extends StatelessWidget {
+  const ActivitiesList({
     super.key,
-    required this.nomeAtividade,
-    required this.atividadeCompleta,
+    required this.nameActivity,
+    required this.activityCompleted,
     required this.onChanged,
     required this.deleteFunction,
   });
 
-  final String nomeAtividade;
-  final bool atividadeCompleta;
+  final String nameActivity;
+  final bool activityCompleted;
   final Function(bool?)? onChanged;
   final Function(BuildContext)? deleteFunction;
 
@@ -41,19 +41,19 @@ class ListaAtividades extends StatelessWidget {
           child: Row(
             children: [
               Checkbox(
-                value: atividadeCompleta,
+                value: activityCompleted,
                 onChanged: onChanged,
                 checkColor: Colors.black,
                 activeColor: Colors.white,
                 side: const BorderSide(color: Colors.white),
               ),
               Text(
-                nomeAtividade,
+                nameActivity,
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    decoration: atividadeCompleta
+                    decoration: activityCompleted
                         ? TextDecoration.lineThrough
                         : TextDecoration.none,
                     decorationColor: Colors.white,

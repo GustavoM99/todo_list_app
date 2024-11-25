@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:desafio_fazpay/util/lista_atividades.dart';
+import 'package:desafio_fazpay/util/activities_list.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,49 +16,49 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   TextEditingController textController = TextEditingController();
 
-  List listaAtividades = [];
+  List activitiesList = [];
 
   @override
   void initState() {
     super.initState();
-    _carregarAtividades();
+    _loadActivities();
   }
 
-  Future<void> _salvarAtividades() async {
+  Future<void> _saveActivities() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String encodedData = jsonEncode(listaAtividades);
+    String encodedData = jsonEncode(activitiesList);
     await prefs.setString('listaAtividades', encodedData);
   }
 
-  Future<void> _carregarAtividades() async {
+  Future<void> _loadActivities() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? encodedData = prefs.getString('listaAtividades');
     if (encodedData != null) {
       setState(() {
-        listaAtividades = List<dynamic>.from(jsonDecode(encodedData));
+        activitiesList = List<dynamic>.from(jsonDecode(encodedData));
       });
     }
   }
 
   void checkBoxChanged(int index) {
     setState(() {
-      listaAtividades[index][1] = !listaAtividades[index][1];
+      activitiesList[index][1] = !activitiesList[index][1];
     });
-    _salvarAtividades();
+    _saveActivities();
   }
 
-  void salvarNovaAtividade() {
+  void saveNewActivity() {
     setState(() {
-      listaAtividades.add([textController.text, false]);
+      activitiesList.add([textController.text, false]);
     });
-    _salvarAtividades();
+    _saveActivities();
   }
 
-  void deletarAtividade(int index) {
+  void deleteActivity(int index) {
     setState(() {
-      listaAtividades.removeAt(index);
+      activitiesList.removeAt(index);
     });
-    _salvarAtividades();
+    _saveActivities();
   }
 
   void _showInputModal(BuildContext context) {
@@ -95,9 +95,31 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      salvarNovaAtividade();
-                      Navigator.pop(context);
-                      textController.clear();
+                      if (textController.text.trim().isEmpty) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Aviso'),
+                              content: const Text(
+                                  'Por favor, insira uma atividade!'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        saveNewActivity();
+                        Navigator.pop(context);
+                        textController.clear();
+                      }
                     },
                     child: const Text('OK'),
                   ),
@@ -130,13 +152,13 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: ListView.builder(
-        itemCount: listaAtividades.length,
+        itemCount: activitiesList.length,
         itemBuilder: (BuildContext context, index) {
-          return ListaAtividades(
-            nomeAtividade: listaAtividades[index][0],
-            atividadeCompleta: listaAtividades[index][1],
+          return ActivitiesList(
+            nameActivity: activitiesList[index][0],
+            activityCompleted: activitiesList[index][1],
             onChanged: (value) => checkBoxChanged(index),
-            deleteFunction: (value) => deletarAtividade(index),
+            deleteFunction: (value) => deleteActivity(index),
           );
         },
       ),
